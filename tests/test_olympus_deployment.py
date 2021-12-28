@@ -2,6 +2,10 @@ def test_erc20_deployment(OHM_token):
     assert len(OHM_token.address) == 42
 
 
+def test_authority_deployment(authority_contract):
+    assert len(authority_contract.address) == 42
+
+
 def test_treasury_deployment(olympus_treasury):
     assert len(olympus_treasury.address) == 42
 

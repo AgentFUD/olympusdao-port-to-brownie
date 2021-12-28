@@ -1,6 +1,7 @@
 import pytest
 from brownie import (
     accounts,
+    OlympusAuthority,
     OlympusERC20Token,
     OlympusTreasury,
     sOlympus,
@@ -11,18 +12,22 @@ from brownie import (
 
 
 @pytest.fixture(scope="module")
-def OHM_token():
+def authority_contract():
     owner = accounts[0]
-    fake_authority = accounts[1]
-    return OlympusERC20Token.deploy(fake_authority, {"from": owner})
+    return OlympusAuthority.deploy(owner, owner, owner, owner, {"from": owner})
 
 
 @pytest.fixture(scope="module")
-def olympus_treasury(OHM_token):
+def OHM_token(authority_contract):
     owner = accounts[0]
-    fake_authority = accounts[1]
+    return OlympusERC20Token.deploy(authority_contract.address, {"from": owner})
+
+
+@pytest.fixture(scope="module")
+def olympus_treasury(OHM_token, authority_contract):
+    owner = accounts[0]
     return OlympusTreasury.deploy(
-        OHM_token.address, 20, fake_authority, {"from": owner}
+        OHM_token.address, 20, authority_contract.address, {"from": owner}
     )
 
 
@@ -40,9 +45,8 @@ def gOHM_token(sOHM_token):
 
 
 @pytest.fixture(scope="module")
-def olympus_staking_contract(OHM_token, sOHM_token, gOHM_token):
+def olympus_staking_contract(OHM_token, sOHM_token, gOHM_token, authority_contract):
     owner = accounts[0]
-    fake_authority = accounts[1]
     return OlympusStaking.deploy(
         OHM_token.address,
         sOHM_token.address,
@@ -50,19 +54,20 @@ def olympus_staking_contract(OHM_token, sOHM_token, gOHM_token):
         10,
         10,
         10,
-        fake_authority,
+        authority_contract.address,
         {"from": owner},
     )
 
 
 @pytest.fixture(scope="module")
-def distributor_contract(olympus_treasury, OHM_token, olympus_staking_contract):
+def distributor_contract(
+    olympus_treasury, OHM_token, olympus_staking_contract, authority_contract
+):
     owner = accounts[0]
-    fake_authority = accounts[1]
     return Distributor.deploy(
         olympus_treasury.address,
         OHM_token.address,
         olympus_staking_contract.address,
-        fake_authority,
+        authority_contract.address,
         {"from": owner},
     )
