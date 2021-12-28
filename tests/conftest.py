@@ -6,6 +6,7 @@ from brownie import (
     sOlympus,
     OlympusStaking,
     gOHM,
+    Distributor,
 )
 
 
@@ -38,17 +39,6 @@ def gOHM_token(sOHM_token):
     return gOHM.deploy(migrator, sOHM_token.address, {"from": owner})
 
 
-"""
-        address _ohm,
-        address _sOHM,
-        address _gOHM,
-        uint256 _epochLength,
-        uint256 _firstEpochNumber,
-        uint256 _firstEpochTime,
-        address _authority
-"""
-
-
 @pytest.fixture(scope="module")
 def olympus_staking_contract(OHM_token, sOHM_token, gOHM_token):
     owner = accounts[0]
@@ -60,6 +50,19 @@ def olympus_staking_contract(OHM_token, sOHM_token, gOHM_token):
         10,
         10,
         10,
+        fake_authority,
+        {"from": owner},
+    )
+
+
+@pytest.fixture(scope="module")
+def distributor_contract(olympus_treasury, OHM_token, olympus_staking_contract):
+    owner = accounts[0]
+    fake_authority = accounts[1]
+    return Distributor.deploy(
+        olympus_treasury.address,
+        OHM_token.address,
+        olympus_staking_contract.address,
         fake_authority,
         {"from": owner},
     )

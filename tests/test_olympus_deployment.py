@@ -16,3 +16,7 @@ def test_gohm_deployment(gOHM_token):
 
 def test_staking_deployment(olympus_staking_contract):
     assert len(olympus_staking_contract.address) == 42
+
+
+def test_distributor_deployment(distributor_contract):
+    assert len(distributor_contract.address) == 42
