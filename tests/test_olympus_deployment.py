@@ -1,10 +1,18 @@
-def test_erc20_deployment(olympus_erc20_token):
-    assert len(olympus_erc20_token.address) == 42
+def test_erc20_deployment(OHM_token):
+    assert len(OHM_token.address) == 42
 
 
 def test_treasury_deployment(olympus_treasury):
     assert len(olympus_treasury.address) == 42
 
 
-def test_sohm_deployment(sOlympus_token):
-    assert len(sOlympus_token.address) == 42
+def test_sohm_deployment(sOHM_token):
+    assert len(sOHM_token.address) == 42
+
+
+def test_gohm_deployment(gOHM_token):
+    assert len(gOHM_token.address) == 42
+
+
+def test_staking_deployment(olympus_staking_contract):
+    assert len(olympus_staking_contract.address) == 42
