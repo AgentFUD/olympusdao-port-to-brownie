@@ -41,9 +41,7 @@ def test_non_initializer_cannot_set_gOHM(accounts, sohm, gohm):
 def test_gOHM_address_cannot_be_zero(accounts, sohm):
     initializer = accounts[0]
     with brownie.reverts():
-        sohm.setgOHM(
-            c.ZERO_ADDRESS, {"from": initializer}
-        )
+        sohm.setgOHM(c.ZERO_ADDRESS, {"from": initializer})
 
 
 def test_initialize_assigns_total_gons_to_staking_contract(
