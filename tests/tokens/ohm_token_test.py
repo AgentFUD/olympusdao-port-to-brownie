@@ -1,4 +1,3 @@
-import pytest
 import brownie
 
 
@@ -34,19 +33,19 @@ def test_mint_increases_total_supply(accounts, OHM_token):
 def test_burn_reduces_total_supply(accounts, OHM_token):
     bob = accounts[1]
     total_supply_before = OHM_token.totalSupply()
-    OHM_token.burn(10, {'from': bob})
-    assert OHM_token.totalSupply() == total_supply_before - 10    
+    OHM_token.burn(10, {"from": bob})
+    assert OHM_token.totalSupply() == total_supply_before - 10
 
 
 def test_burn_cannot_exceed_total_supply(accounts, OHM_token):
     bob = accounts[1]
     total_supply_before = OHM_token.totalSupply()
     with brownie.reverts("ERC20: burn amount exceeds balance"):
-        OHM_token.burn(total_supply_before + 1, {'from': bob})
+        OHM_token.burn(total_supply_before + 1, {"from": bob})
 
 
 def test_burn_cannot_exceed_bobs_balance(accounts, OHM_token):
     bob = accounts[1]
     bob_balance = OHM_token.balanceOf(bob)
     with brownie.reverts("ERC20: burn amount exceeds balance"):
-        OHM_token.burn(bob_balance + 1, {'from': bob})
+        OHM_token.burn(bob_balance + 1, {"from": bob})
