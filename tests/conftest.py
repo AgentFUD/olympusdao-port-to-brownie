@@ -12,62 +12,58 @@ from brownie import (
 
 
 @pytest.fixture(scope="module")
-def authority_contract():
+def authority():
     owner = accounts[0]
     return OlympusAuthority.deploy(owner, owner, owner, owner, {"from": owner})
 
 
 @pytest.fixture(scope="module")
-def OHM_token(authority_contract):
+def ohm(authority):
     owner = accounts[0]
-    return OlympusERC20Token.deploy(authority_contract.address, {"from": owner})
+    return OlympusERC20Token.deploy(authority.address, {"from": owner})
 
 
 @pytest.fixture(scope="module")
-def olympus_treasury(OHM_token, authority_contract):
+def treasury(ohm, authority):
     owner = accounts[0]
-    return OlympusTreasury.deploy(
-        OHM_token.address, 20, authority_contract.address, {"from": owner}
-    )
+    return OlympusTreasury.deploy(ohm.address, 20, authority.address, {"from": owner})
 
 
 @pytest.fixture(scope="module")
-def sOHM_token():
+def sohm():
     owner = accounts[0]
     return sOlympus.deploy({"from": owner})
 
 
 @pytest.fixture(scope="module")
-def gOHM_token(sOHM_token):
+def gohm(sohm):
     owner = accounts[0]
     migrator = accounts[1]
-    return gOHM.deploy(migrator, sOHM_token.address, {"from": owner})
+    return gOHM.deploy(migrator, sohm.address, {"from": owner})
 
 
 @pytest.fixture(scope="module")
-def olympus_staking_contract(OHM_token, sOHM_token, gOHM_token, authority_contract):
+def staker(ohm, sohm, gohm, authority):
     owner = accounts[0]
     return OlympusStaking.deploy(
-        OHM_token.address,
-        sOHM_token.address,
-        gOHM_token.address,
+        ohm.address,
+        sohm.address,
+        gohm.address,
         10,
         10,
         10,
-        authority_contract.address,
+        authority.address,
         {"from": owner},
     )
 
 
 @pytest.fixture(scope="module")
-def distributor_contract(
-    olympus_treasury, OHM_token, olympus_staking_contract, authority_contract
-):
+def distributor(treasury, ohm, staker, authority):
     owner = accounts[0]
     return Distributor.deploy(
-        olympus_treasury.address,
-        OHM_token.address,
-        olympus_staking_contract.address,
-        authority_contract.address,
+        treasury.address,
+        ohm.address,
+        staker.address,
+        authority.address,
         {"from": owner},
     )
