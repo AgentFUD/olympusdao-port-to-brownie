@@ -9,6 +9,7 @@ from brownie import (
     gOHM,
     Distributor,
 )
+import scripts.constants as c
 
 
 @pytest.fixture(scope="module")
@@ -49,9 +50,9 @@ def staker(ohm, sohm, gohm, authority):
         ohm.address,
         sohm.address,
         gohm.address,
-        10,
-        10,
-        10,
+        c.EPOCH_LENGTH,
+        c.EPOCH_NUMBER,
+        c.FUTURE_END_TIME,
         authority.address,
         {"from": owner},
     )
