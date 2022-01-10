@@ -32,7 +32,7 @@ contract Distributor is IDistributor, OlympusAccessControlled {
         uint256 rate; // in ten-thousandths ( 5000 = 0.5% )
         address recipient;
     }
-    Info[] public info;
+    Info[] public information;
 
     struct Adjust {
         bool add;
@@ -64,9 +64,9 @@ contract Distributor is IDistributor, OlympusAccessControlled {
     function distribute() external override {
         require(msg.sender == staking, "Only staking");
         // distribute rewards to each recipient
-        for (uint256 i = 0; i < info.length; i++) {
-            if (info[i].rate > 0) {
-                treasury.mint(info[i].recipient, nextRewardAt(info[i].rate)); // mint and send tokens
+        for (uint256 i = 0; i < information.length; i++) {
+            if (information[i].rate > 0) {
+                treasury.mint(information[i].recipient, nextRewardAt(information[i].rate)); // mint and send tokens
                 adjust(i); // check for adjustment
             }
         }
@@ -92,25 +92,25 @@ contract Distributor is IDistributor, OlympusAccessControlled {
         if (adjustment.rate != 0) {
             if (adjustment.add) {
                 // if rate should increase
-                info[_index].rate = info[_index].rate.add(adjustment.rate); // raise rate
-                if (info[_index].rate >= adjustment.target) {
+                information[_index].rate = information[_index].rate.add(adjustment.rate); // raise rate
+                if (information[_index].rate >= adjustment.target) {
                     // if target met
                     adjustments[_index].rate = 0; // turn off adjustment
-                    info[_index].rate = adjustment.target; // set to target
+                    information[_index].rate = adjustment.target; // set to target
                 }
             } else {
                 // if rate should decrease
-                if (info[_index].rate > adjustment.rate) {
+                if (information[_index].rate > adjustment.rate) {
                     // protect from underflow
-                    info[_index].rate = info[_index].rate.sub(adjustment.rate); // lower rate
+                    information[_index].rate = information[_index].rate.sub(adjustment.rate); // lower rate
                 } else {
-                    info[_index].rate = 0;
+                    information[_index].rate = 0;
                 }
 
-                if (info[_index].rate <= adjustment.target) {
+                if (information[_index].rate <= adjustment.target) {
                     // if target met
                     adjustments[_index].rate = 0; // turn off adjustment
-                    info[_index].rate = adjustment.target; // set to target
+                    information[_index].rate = adjustment.target; // set to target
                 }
             }
         }
@@ -134,9 +134,9 @@ contract Distributor is IDistributor, OlympusAccessControlled {
      */
     function nextRewardFor(address _recipient) public view override returns (uint256) {
         uint256 reward;
-        for (uint256 i = 0; i < info.length; i++) {
-            if (info[i].recipient == _recipient) {
-                reward = reward.add(nextRewardAt(info[i].rate));
+        for (uint256 i = 0; i < information.length; i++) {
+            if (information[i].recipient == _recipient) {
+                reward = reward.add(nextRewardAt(information[i].rate));
             }
         }
         return reward;
@@ -161,7 +161,7 @@ contract Distributor is IDistributor, OlympusAccessControlled {
     function addRecipient(address _recipient, uint256 _rewardRate) external override onlyGovernor {
         require(_recipient != address(0), "Zero address: Recipient");
         require(_rewardRate <= rateDenominator, "Rate cannot exceed denominator");
-        info.push(Info({recipient: _recipient, rate: _rewardRate}));
+        information.push(Info({recipient: _recipient, rate: _rewardRate}));
     }
 
     /**
@@ -173,13 +173,13 @@ contract Distributor is IDistributor, OlympusAccessControlled {
             msg.sender == authority.governor() || msg.sender == authority.guardian(),
             "Caller is not governor or guardian"
         );
-        require(info[_index].recipient != address(0), "Recipient does not exist");
-        info[_index].recipient = address(0);
-        info[_index].rate = 0;
+        require(information[_index].recipient != address(0), "Recipient does not exist");
+        information[_index].recipient = address(0);
+        information[_index].rate = 0;
     }
 
     /**
-        @notice set adjustment info for a collector's reward rate
+        @notice set adjustment information for a collector's reward rate
         @param _index uint
         @param _add bool
         @param _rate uint
@@ -195,14 +195,14 @@ contract Distributor is IDistributor, OlympusAccessControlled {
             msg.sender == authority.governor() || msg.sender == authority.guardian(),
             "Caller is not governor or guardian"
         );
-        require(info[_index].recipient != address(0), "Recipient does not exist");
+        require(information[_index].recipient != address(0), "Recipient does not exist");
 
         if (msg.sender == authority.guardian()) {
-            require(_rate <= info[_index].rate.mul(25).div(1000), "Limiter: cannot adjust by >2.5%");
+            require(_rate <= information[_index].rate.mul(25).div(1000), "Limiter: cannot adjust by >2.5%");
         }
 
         if (!_add) {
-            require(_rate <= info[_index].rate, "Cannot decrease rate by more than it already is");
+            require(_rate <= information[_index].rate, "Cannot decrease rate by more than it already is");
         }
 
         adjustments[_index] = Adjust({add: _add, rate: _rate, target: _target});
