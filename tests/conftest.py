@@ -39,8 +39,7 @@ def sohm():
 @pytest.fixture(scope="module")
 def gohm(sohm):
     owner = accounts[0]
-    migrator = accounts[1]
-    return gOHM.deploy(migrator, sohm.address, {"from": owner})
+    return gOHM.deploy(sohm.address, {"from": owner})
 
 
 @pytest.fixture(scope="module")

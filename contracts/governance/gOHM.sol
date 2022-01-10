@@ -40,7 +40,6 @@ contract gOHM is IgOHM, ERC20 {
 
     IsOHM public sOHM;
     address public approved; // minter
-    bool public migrated;
 
     mapping(address => mapping(uint256 => Checkpoint)) public checkpoints;
     mapping(address => uint256) public numCheckpoints;
@@ -48,34 +47,13 @@ contract gOHM is IgOHM, ERC20 {
 
     /* ========== CONSTRUCTOR ========== */
 
-    constructor(address _migrator, address _sOHM)
-        ERC20("Governance OHM", "gOHM", 18)
+    constructor(address _sOHM) ERC20("Governance OHM", "gOHM", 18)
     {
-        require(_migrator != address(0), "Zero address: Migrator");
-        approved = _migrator;
         require(_sOHM != address(0), "Zero address: sOHM");
         sOHM = IsOHM(_sOHM);
     }
 
     /* ========== MUTATIVE FUNCTIONS ========== */
-
-    /**
-     * @notice transfer mint rights from migrator to staking
-     * @notice can only be done once, at the time of contract migration
-     * @param _staking address
-     * @param _sOHM address
-     */
-    function migrate(address _staking, address _sOHM) external override onlyApproved {
-        require(!migrated, "Migrated");
-        migrated = true;
-
-        require(_staking != approved, "Invalid argument");
-        require(_staking != address(0), "Zero address found");
-        approved = _staking;
-
-        require(_sOHM != address(0), "Zero address found");
-        sOHM = IsOHM(_sOHM);
-    }
 
     /**
      * @notice Delegate votes from `msg.sender` to `delegatee`

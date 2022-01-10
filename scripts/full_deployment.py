@@ -27,7 +27,7 @@ def main():
 
     # deploy gOHM
     # first parameter we'll ignore as it is the migrator address and we need no migrations at all.
-    gohm = gOHM.deploy(deployer, sohm.address, {"from": deployer})
+    gohm = gOHM.deploy(sohm.address, {"from": deployer})
     # print(gohm.address)
 
     # deploy OHM
