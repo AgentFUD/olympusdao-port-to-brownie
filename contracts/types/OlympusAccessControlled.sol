@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: AGPL-3.0-only
+// SPDX-License-Identifier: MIT-only
 pragma solidity ^0.8.9;
 
 import "../interfaces/IOlympusAuthority.sol";
